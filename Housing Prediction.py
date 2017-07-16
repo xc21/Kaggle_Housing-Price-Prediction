@@ -54,9 +54,9 @@ def train_test(estimator, x_trn, x_tst, y_trn, y_tst):
 
 #### feature enginnering 
 # Spliting to features and lables and deleting variable I don't need
-train_labels = train.pop('SalePrice')
+train_labels = train.pop('SalePrice') #Remove 'SalePrice' from the train and return it
 
-features = pd.concat([train, test], keys=['train', 'test'])
+features = pd.concat([train, test], keys=['train', 'test']) #concatenation
 
 # delete features with more than half of missing information or do not correlate to SalePrice
 features.drop(['Utilities', 'RoofMatl', 'MasVnrArea', 'BsmtFinSF1', 'BsmtFinSF2', 'BsmtUnfSF', 'Heating', 'LowQualFinSF',
@@ -128,13 +128,14 @@ train_labels = np.log(train_labels)
 
 ##标准化处理
 ## Standardizing numeric features
+##?????为什么只对这几个variable 标准化？
 numeric_features = features.loc[:,['LotFrontage', 'LotArea', 'GrLivArea', 'TotalSF']]
 numeric_features_standardized = (numeric_features - numeric_features.mean())/numeric_features.std()
 
 
 
 
-
+###Converting categorical data to dummies¶
 # Getting Dummies from Condition1 and Condition2
 conditions = set([x for x in features['Condition1']] + [x for x in features['Condition2']])
 dummies = pd.DataFrame(data=np.zeros((len(features.index), len(conditions))),
@@ -176,7 +177,10 @@ test_features_st = features_standardized.loc['test'].drop('Id', axis=1).select_d
 
 #Splitting to train and validation sets¶
 ### Shuffling train sets
+#shuffle:类似于random number generator,  
+# a convenience alias to resample(*arrays, replace=False) to do random permutations of the collections.
 train_features_st, train_features, train_labels = shuffle(train_features_st, train_features, train_labels, random_state = 5)
+
 ### Splitting
 x_train, x_test, y_train, y_test = train_test_split(train_features, train_labels, test_size=0.1, random_state=200)
 x_train_st, x_test_st, y_train_st, y_test_st = train_test_split(train_features_st, train_labels, test_size=0.1, random_state=200)
